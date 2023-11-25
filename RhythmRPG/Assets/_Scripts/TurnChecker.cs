@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TurnChecker : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class TurnChecker : MonoBehaviour
     [SerializeField]
     private RectTransform pointer;
     [SerializeField]
+    private List<BaseGrounds> baseGroundsClockwiseFromUp;
+    [SerializeField]
     private OneTurn turn;
 
     private List<TurnOneTick> turnTicks;
@@ -23,8 +26,10 @@ public class TurnChecker : MonoBehaviour
     private float nextCeckingTime;
     private float offsetCeckingTime;
     private List<TurnOneTickUI> ui;
+    private List<CommandStackPiece> commands;
 
     private static readonly float inputOffset = 0.07f;
+    private static readonly List<string> clockwiseFromUpString = new List<string>{ "Up", "Right", "Down", "Left" };
 
     public bool turnEnd => !isPlaying && offsetCeckingTime < 0;
 
@@ -32,6 +37,7 @@ public class TurnChecker : MonoBehaviour
     {
         offsetCeckingTime = -1f;
         isPlaying = false;
+        commands = new List<CommandStackPiece>();
         SetEvent();
     }
 
@@ -76,6 +82,7 @@ public class TurnChecker : MonoBehaviour
         timeStart = 0;
         playIndex = 0;
         nextCeckingTime = turnTicks[0].metronomeWait;
+        commands.Clear();
 
         isPlaying = true;
     }
@@ -121,11 +128,14 @@ public class TurnChecker : MonoBehaviour
 
             ui.Clear();
         }
+
+        timeStart = 0f;
+        SetIconAnchor();
     }
 
     private void SetEvent()
     {
-        foreach (string button in new string[]{ "Up", "Right", "Down", "Left" })
+        foreach (string button in clockwiseFromUpString)
         {
             InputHandler.holdAbleOnEvent[button] = new List<System.Action>() { () => ButtonPress(button) };
             InputHandler.holdAbleOffEvent[button] = new List<System.Action>() { () => ButtonUp(button) };
@@ -134,10 +144,44 @@ public class TurnChecker : MonoBehaviour
 
     private void ButtonPress(string button)
     {
+        int turnTickIndex = playIndex;
+        if (offsetCeckingTime > 0)
+            --turnTickIndex;
 
+        if (timeStart > (nextCeckingTime - inputOffset) ||
+            offsetCeckingTime > 0)
+        {
+            int index = clockwiseFromUpString.FindIndex(x => x == button);
+            Color color = baseGroundsClockwiseFromUp[index].color;
+            int commandFind = commands.FindIndex(x => x.timeIndex == turnTickIndex);
+            if (commandFind > -1)
+            {
+                commands[commandFind].groundIndex = index;
+                commands[commandFind].push = true;
+            }
+            else
+            {
+                commands.Add(new CommandStackPiece(turnTickIndex, index, true));
+            }
+        }
     }
     private void ButtonUp(string button)
     {
 
+    }
+}
+
+public class CommandStackPiece
+{
+    public int timeIndex;
+    // ClockwiseFromUp >> "Up", "Right", "Down", "Left"
+    public int groundIndex;
+    public bool push;
+
+    public CommandStackPiece(int _timeIndex, int _groundIndex, bool _push)
+    {
+        timeIndex = _timeIndex;
+        groundIndex = _groundIndex;
+        push = _push;
     }
 }
