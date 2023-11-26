@@ -12,5 +12,5 @@ public class OneTurn : ScriptableObject
 public struct TurnOneTick
 {
     public AudioClip metronomeClip;
-    public float metronomeWait;
+    public float waitTime;
 }

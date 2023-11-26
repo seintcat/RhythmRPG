@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TurnChecker : MonoBehaviour
 {
     [SerializeField]
-    private AudioSource metronome;
+    private AudioSource audioSource;
     [SerializeField]
     private GameObject turnTickUI;
     [SerializeField]
@@ -15,6 +16,8 @@ public class TurnChecker : MonoBehaviour
     private RectTransform pointer;
     [SerializeField]
     private List<BaseGrounds> baseGroundsClockwiseFromUp;
+    [SerializeField]
+    private AudioClip turnStartSound;
     [SerializeField]
     private OneTurn turn;
 
@@ -26,7 +29,7 @@ public class TurnChecker : MonoBehaviour
     private float nextCeckingTime;
     private float offsetCeckingTime;
     private List<TurnOneTickUI> ui;
-    private List<CommandStackPiece> commands;
+    private Dictionary<int, CommandStackPiece> commands;
 
     private static readonly float inputOffset = 0.07f;
     private static readonly List<string> clockwiseFromUpString = new List<string>{ "Up", "Right", "Down", "Left" };
@@ -37,7 +40,7 @@ public class TurnChecker : MonoBehaviour
     {
         offsetCeckingTime = -1f;
         isPlaying = false;
-        commands = new List<CommandStackPiece>();
+        commands = new Dictionary<int, CommandStackPiece>();
         SetEvent();
     }
 
@@ -58,15 +61,30 @@ public class TurnChecker : MonoBehaviour
 
             if (timeStart > nextCeckingTime)
             {
-                metronome.PlayOneShot(turnTicks[playIndex].metronomeClip);
+                audioSource.PlayOneShot(turnTicks[playIndex].metronomeClip);
                 if (turnTicks.Count <= ++playIndex)
                 {
                     isPlaying = false;
                     return;
                 }
 
-                nextCeckingTime += turnTicks[playIndex].metronomeWait;
+                nextCeckingTime += turnTicks[playIndex].waitTime;
                 offsetCeckingTime = inputOffset;
+
+                if (commands.ContainsKey(playIndex - 1) &&
+                    commands[playIndex - 1].push)
+                {
+                    commands.Add(playIndex, new CommandStackPiece(playIndex, commands[playIndex - 1].groundIndex, true));
+                }
+            }
+
+            if (ui.Count > playIndex &&
+                commands.ContainsKey(playIndex - 1))
+            {
+                if (commands[playIndex - 1].push)
+                    ui[playIndex].ratio = (turnTicks[playIndex].waitTime + timeStart - nextCeckingTime) / turnTicks[playIndex].waitTime;
+                else
+                    ui[playIndex].ratio = 0;
             }
         }
         else if(offsetCeckingTime < 0)
@@ -81,8 +99,9 @@ public class TurnChecker : MonoBehaviour
         MakeTurnUI();
         timeStart = 0;
         playIndex = 0;
-        nextCeckingTime = turnTicks[0].metronomeWait;
+        nextCeckingTime = turnTicks[0].waitTime;
         commands.Clear();
+        audioSource.PlayOneShot(turnStartSound);
 
         isPlaying = true;
     }
@@ -94,7 +113,7 @@ public class TurnChecker : MonoBehaviour
         timeStart = 0;
 
         foreach (TurnOneTick turn in turnTicks)
-            timeAll += turn.metronomeWait;
+            timeAll += turn.waitTime;
 
         foreach (TurnOneTick turn in turnTicks)
         {
@@ -102,11 +121,11 @@ public class TurnChecker : MonoBehaviour
             RectTransform trans = ui[ui.Count - 1].GetComponent<RectTransform>();
             trans.SetParent(turnWrapper);
             trans.anchorMin = new Vector2(timeStart / timeAll, 0);
-            trans.anchorMax = new Vector2((timeStart + turn.metronomeWait) / timeAll, 1);
+            trans.anchorMax = new Vector2((timeStart + turn.waitTime) / timeAll, 1);
             trans.offsetMax = Vector2.zero;
             trans.offsetMin = Vector2.zero;
 
-            timeStart += turn.metronomeWait;
+            timeStart += turn.waitTime;
         }
     }
 
@@ -152,22 +171,49 @@ public class TurnChecker : MonoBehaviour
             offsetCeckingTime > 0)
         {
             int index = clockwiseFromUpString.FindIndex(x => x == button);
-            Color color = baseGroundsClockwiseFromUp[index].color;
-            int commandFind = commands.FindIndex(x => x.timeIndex == turnTickIndex);
-            if (commandFind > -1)
+            if (commands.ContainsKey(turnTickIndex))
             {
-                commands[commandFind].groundIndex = index;
-                commands[commandFind].push = true;
+                commands[turnTickIndex].groundIndex = index;
+                commands[turnTickIndex].push = true;
             }
             else
             {
-                commands.Add(new CommandStackPiece(turnTickIndex, index, true));
+                commands.Add(turnTickIndex, new CommandStackPiece(turnTickIndex, index, true));
+            }
+
+            if((turnTickIndex + 1) < ui.Count)
+            {
+                ui[turnTickIndex + 1].buttonColor = baseGroundsClockwiseFromUp[index].color;
             }
         }
     }
     private void ButtonUp(string button)
     {
+        int turnTickIndex = playIndex;
+        if (offsetCeckingTime > 0)
+            --turnTickIndex;
 
+
+        if (timeStart > (nextCeckingTime - inputOffset) ||
+            offsetCeckingTime > 0)
+        {
+            int index = clockwiseFromUpString.FindIndex(x => x == button); 
+            if (commands.ContainsKey(turnTickIndex) &&
+                commands[turnTickIndex].groundIndex == index)
+            {
+                commands[turnTickIndex].push = false;
+            }
+            else if (commands.ContainsKey(turnTickIndex - 1) &&
+                commands[turnTickIndex - 1].groundIndex == index)
+            {
+                commands.Add(turnTickIndex - 1, new CommandStackPiece(turnTickIndex - 1, index, false));
+            }
+
+            if ((turnTickIndex + 1) < ui.Count)
+            {
+                ui[turnTickIndex + 1].ratio = 0;
+            }
+        }
     }
 }
 

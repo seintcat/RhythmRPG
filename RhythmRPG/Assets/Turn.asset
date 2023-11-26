@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ticks:
   - metronomeClip: {fileID: 8300000, guid: 3d1cafdcab904074bb7725c2dadb55f0, type: 3}
-    metronomeWait: 0.5
+    waitTime: 0.5
   - metronomeClip: {fileID: 8300000, guid: 3d1cafdcab904074bb7725c2dadb55f0, type: 3}
-    metronomeWait: 0.5
+    waitTime: 0.5
   - metronomeClip: {fileID: 8300000, guid: 3d1cafdcab904074bb7725c2dadb55f0, type: 3}
-    metronomeWait: 0.5
+    waitTime: 0.5
   - metronomeClip: {fileID: 8300000, guid: 3d1cafdcab904074bb7725c2dadb55f0, type: 3}
-    metronomeWait: 0.5
+    waitTime: 0.5
