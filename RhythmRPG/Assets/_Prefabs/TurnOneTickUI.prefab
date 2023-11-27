@@ -141,7 +141,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1618220834, guid: 8bc5f12d972641643bdf22cba74d2615, type: 3}
+  m_Sprite: {fileID: -356156241, guid: 62faa3e3c014fb74bbc634a62ff8ad65, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -216,6 +216,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guage: {fileID: 1188081127263084315}
+  arrow: {fileID: 5228601863460034691}
+  downArrow: {fileID: 1161831331, guid: 62faa3e3c014fb74bbc634a62ff8ad65, type: 3}
+  upArrow: {fileID: -572348668, guid: 62faa3e3c014fb74bbc634a62ff8ad65, type: 3}
+  none: {fileID: -356156241, guid: 62faa3e3c014fb74bbc634a62ff8ad65, type: 3}
 --- !u!1 &8368788089514818560
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,6 +7,14 @@ public class TurnOneTickUI : MonoBehaviour
 {
     [SerializeField]
     private Image guage;
+    [SerializeField]
+    private Image arrow;
+    [SerializeField]
+    private Sprite downArrow;
+    [SerializeField]
+    private Sprite upArrow;
+    [SerializeField]
+    private Sprite none;
 
     public float ratio
     {
@@ -22,16 +30,25 @@ public class TurnOneTickUI : MonoBehaviour
             guage.color = value;
         }
     }
-
-    // Start is called before the first frame update
-    void Start()
+    public Color arrowColor
     {
-        
+        set
+        {
+            arrow.color = value;
+        }
+    }
+    public bool push
+    {
+        set
+        {
+            arrow.sprite = value ? downArrow : upArrow;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Initialize()
     {
-        
+        arrow.color = Color.white;
+        guage.color = Color.white;
+        arrow.sprite = none;
     }
 }

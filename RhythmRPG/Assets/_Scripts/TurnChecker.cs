@@ -76,6 +76,12 @@ public class TurnChecker : MonoBehaviour
                 }
 
                 nextCeckingTime = turnTimes[playIndex];
+
+                if (commands.ContainsKey(checkIndex) &&
+                    playIndex < ui.Count)
+                {
+                    ui[playIndex].barColor = baseGroundsClockwiseFromUp[commands[playIndex - 1].groundIndex].color;
+                }
             }
 
             if (timeStart > (turnTimes[checkIndex] + inputOffset))
@@ -85,14 +91,10 @@ public class TurnChecker : MonoBehaviour
                 {
                     commands.Add(checkIndex + 1, new CommandStackPiece(checkIndex + 1, commands[checkIndex].groundIndex, true));
                 }
+
                 ++checkIndex;
             }
 
-            //int tatgetIndex = checkIndex;
-            //if (timeStart < (turnTimes[checkIndex] - inputOffset))
-            //{
-
-            //}
             if (ui.Count > playIndex &&
             commands.ContainsKey(playIndex - 1) &&
             commands[playIndex - 1].push)
@@ -113,9 +115,9 @@ public class TurnChecker : MonoBehaviour
             //}
 
             RemoveUI();
-            enabled = false;
+            //enabled = false;
 
-            //TurnStart(turn);
+            TurnStart(turn);
         }
     }
 
@@ -206,28 +208,39 @@ public class TurnChecker : MonoBehaviour
 
     private void ButtonPress(string button)
     {
+        if (!enabled)
+            return;
+
         if (Math.Abs(timeStart - turnTimes[checkIndex]) <= inputOffset)
         {
             int index = clockwiseFromUpString.FindIndex(x => x == button);
-            if (commands.ContainsKey(checkIndex))
+            if (!commands.ContainsKey(checkIndex))
             {
-                Debug.LogWarning(clockwiseFromUpString[commands[checkIndex].groundIndex] + "?");
-                commands[checkIndex].groundIndex = index;
-                commands[checkIndex].push = true;
+                commands.Add(checkIndex, new CommandStackPiece(checkIndex, index, true));
             }
             else
             {
-                commands.Add(checkIndex, new CommandStackPiece(checkIndex, index, true));
+                commands[checkIndex].push = false;
+                ui[checkIndex].push = false;
+                return;
             }
 
             if ((checkIndex + 1) < ui.Count)
             {
                 ui[checkIndex + 1].barColor = baseGroundsClockwiseFromUp[index].color;
             }
+            if (checkIndex > -1 && checkIndex < ui.Count)
+            {
+                ui[checkIndex].arrowColor = baseGroundsClockwiseFromUp[index].color;
+                ui[checkIndex].push = true;
+            }
         }
     }
     private void ButtonUp(string button)
     {
+        if (!enabled)
+            return;
+
         int index = clockwiseFromUpString.FindIndex(x => x == button);
         int tatgetIndex = checkIndex;
         if (timeStart < (turnTimes[checkIndex] - inputOffset))
@@ -241,9 +254,14 @@ public class TurnChecker : MonoBehaviour
         if (commands.ContainsKey(tatgetIndex) &&
         commands[tatgetIndex].groundIndex == index)
         {
-            //Debug.LogWarning("up playIndex > " + tatgetIndex + ", " + clockwiseFromUpString[index]);
             commands[tatgetIndex].groundIndex = index;
             commands[tatgetIndex].push = false;
+            
+            if (tatgetIndex < ui.Count)
+            {
+                ui[tatgetIndex].push = false;
+                ui[tatgetIndex].arrowColor = baseGroundsClockwiseFromUp[commands[tatgetIndex].groundIndex].color;
+            }
         }
     }
 }
@@ -251,7 +269,6 @@ public class TurnChecker : MonoBehaviour
 public class CommandStackPiece
 {
     public int timeIndex;
-    // ClockwiseFromUp >> "Up", "Right", "Down", "Left"
     public int groundIndex;
     public bool push;
 
