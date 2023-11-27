@@ -15,7 +15,7 @@ public class TurnOneTickUI : MonoBehaviour
             guage.fillAmount = value;
         }
     }
-    public Color buttonColor
+    public Color barColor
     {
         set
         {
