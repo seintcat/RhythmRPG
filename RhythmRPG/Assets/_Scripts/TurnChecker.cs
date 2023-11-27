@@ -21,6 +21,8 @@ public class TurnChecker : MonoBehaviour
     [SerializeField]
     private AudioClip turnStartSound;
     [SerializeField]
+    private CommandReader commandReader;
+    [SerializeField]
     private OneTurn turn;
 
     private List<TurnOneTick> turnTicks;
@@ -115,16 +117,17 @@ public class TurnChecker : MonoBehaviour
             //}
 
             RemoveUI();
-            //enabled = false;
+            enabled = false;
 
-            TurnStart(turn);
+            commandReader.ReadCommand(commands, turnTicks.Count);
+            //TurnStart(turn);
         }
     }
 
     public void TurnStart(OneTurn turn)
     {
         enabled = true;
-        MakeTurnTime(turn);
+        MakeTurnTime(turn.ticks);
         MakeTurnUI();
         timeStart = 0;
         playIndex = 0;
@@ -138,9 +141,9 @@ public class TurnChecker : MonoBehaviour
         isPlaying = true;
     }
 
-    private void MakeTurnTime(OneTurn turn)
+    private void MakeTurnTime(List<TurnOneTick> ticks)
     {
-        turnTicks = turn.ticks;
+        turnTicks = ticks;
         turnTimes.Clear();
 
         float time = 0f;
