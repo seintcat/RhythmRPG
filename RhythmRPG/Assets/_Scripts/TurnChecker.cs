@@ -20,20 +20,14 @@ public class TurnChecker : MonoBehaviour
     private List<BaseGrounds> baseGroundsClockwiseFromUp;
     [SerializeField]
     private AudioClip turnStartSound;
-    [SerializeField]
-    private CommandReader commandReader;
-    [SerializeField]
-    private OneTurn turn;
 
     private List<TurnOneTick> turnTicks;
     private List<float> turnTimes;
     private float timeStart;
     private float timeAll;
     private bool isPlaying;
-    //private bool inputsAtLast;
     private int playIndex;
     private int checkIndex;
-    //private int lastInputIndex;
     private float nextCeckingTime;
     private float offsetCeckingTime;
     private List<TurnOneTickUI> ui;
@@ -46,17 +40,17 @@ public class TurnChecker : MonoBehaviour
 
     private void Awake()
     {
-        //offsetCeckingTime = -1f;
+        offsetCeckingTime = inputOffset;
         isPlaying = false;
         commands = new Dictionary<int, CommandStackPiece>();
         turnTimes = new List<float>();
-        SetEvent();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        TurnStart(turn);
+        SetEvent();
+        enabled = false;
     }
 
     // Update is called once per frame
@@ -119,15 +113,14 @@ public class TurnChecker : MonoBehaviour
             RemoveUI();
             enabled = false;
 
-            commandReader.ReadCommand(commands, turnTicks.Count);
-            //TurnStart(turn);
+            ReadCommand(commands, turnTicks.Count);
         }
     }
 
-    public void TurnStart(OneTurn turn)
+    public void TurnStart(List<TurnOneTick> ticks)
     {
         enabled = true;
-        MakeTurnTime(turn.ticks);
+        MakeTurnTime(ticks);
         MakeTurnUI();
         timeStart = 0;
         playIndex = 0;
@@ -135,8 +128,6 @@ public class TurnChecker : MonoBehaviour
         nextCeckingTime = turnTimes[0];
         commands.Clear();
         audioSource.PlayOneShot(turnStartSound);
-        //inputsAtLast = false;
-        //lastInputIndex = 0;
 
         isPlaying = true;
     }
@@ -204,8 +195,15 @@ public class TurnChecker : MonoBehaviour
     {
         foreach (string button in clockwiseFromUpString)
         {
-            InputHandler.holdAbleOnEvent[button] = new List<System.Action>() { () => ButtonPress(button) };
-            InputHandler.holdAbleOffEvent[button] = new List<System.Action>() { () => ButtonUp(button) };
+            if (InputHandler.holdAbleOnEvent.ContainsKey(button))
+                InputHandler.holdAbleOnEvent[button].Add(() => ButtonPress(button));
+            else
+                InputHandler.holdAbleOnEvent.Add(button, new List<System.Action>() { () => ButtonPress(button) });
+
+            if (InputHandler.holdAbleOffEvent.ContainsKey(button))
+                InputHandler.holdAbleOffEvent[button].Add(() => ButtonUp(button));
+            else
+                InputHandler.holdAbleOffEvent.Add(button, new List<System.Action>() { () => ButtonUp(button) });
         }
     }
 
@@ -266,6 +264,37 @@ public class TurnChecker : MonoBehaviour
                 ui[tatgetIndex].arrowColor = baseGroundsClockwiseFromUp[commands[tatgetIndex].groundIndex].color;
             }
         }
+    }
+
+    public List<OneCommand> ReadCommand(Dictionary<int, CommandStackPiece> commands, int turnTicksCount)
+    {
+        List<OneCommand> commandRead = new List<OneCommand>();
+        bool pushed = false;
+        for (int i = 0; i < turnTicksCount; i++)
+        {
+            if (commands.ContainsKey(i))
+            {
+                if (commandRead.Count > 0 &&
+                    commands[i].groundIndex == commandRead[commandRead.Count - 1].groundIndex &&
+                    pushed)
+                    ++commandRead[commandRead.Count - 1].chargeCount;
+                else
+                    commandRead.Add(new OneCommand(commands[i].groundIndex));
+
+                pushed = commands[i].push;
+            }
+            else if ((i - 1) > -1 && pushed)
+                ++commandRead[commandRead.Count - 1].chargeCount;
+            else
+                commandRead.Add(new OneCommand(-1));
+        }
+
+        return commandRead;
+        //foreach (OneCommand command in commandRead)
+        //{
+        //    if(command.groundIndex > -1)
+        //        Debug.Log(clockwiseFromUpString[command.groundIndex] + ", " + command.chargeCount);
+        //}
     }
 }
 
