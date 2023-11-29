@@ -63,8 +63,7 @@ public class MenuHandler : MonoBehaviour
         selector.anchorMin = new Vector2(0, 0);
         selector.anchorMax = new Vector2(1, 1);
         selector.offsetMin = new Vector2(0, 0);
-        selector.offsetMax = new Vector2(1, 1);
-        Debug.Log(selector.offsetMin + ", " + selector.offsetMax);
+        selector.offsetMax = new Vector2(0, 0);
         return false;
     }
 
