@@ -1,10 +1,14 @@
 비레벨별 캐릭터 Character
 이름 Name
-유니티에서 그래픽 쓰는거 이름  
-컬러 r g b
+유니티에서 그래픽 쓰는거 GraphicIndex
+컬러 r g b ColorR ColorG ColorB
 설명 Description
-속도는 커맨드 따라감 따라서 디비 없음
 
+캐릭터 커맨드 리듬 CharacterRhythm
+캐릭터 이름 외래키 CharacterName
+순서 RhythmIndex
+기다리는 시간 WaitTime
+효과음인덱스 ClipIndex
 
 레벨별 캐릭터 스탯 CharacterStats
 캐릭터 이름 외래키 CharacterName
