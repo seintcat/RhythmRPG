@@ -121,3 +121,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 6495577259754109123}
   animator: {fileID: 4991424254776066167}
+  startsLeft: 0

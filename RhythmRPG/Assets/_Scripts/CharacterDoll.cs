@@ -8,6 +8,11 @@ public class CharacterDoll : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     [SerializeField]
     private Animator animator;
+    [SerializeField]
+    private bool startsLeft;
+
+    public Color color { set{ spriteRenderer.color = value; } }
+    public bool lookLeft { set { spriteRenderer.flipX = !startsLeft ? value : !value; } }
 
     // Start is called before the first frame update
     void Start()

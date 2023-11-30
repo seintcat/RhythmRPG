@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,149 +20,69 @@ public class GameStatics : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
-    public static PositionChangeMethod GetPositionChangeMethod(string index)
+    public GameObject MakeCharacterDoll(int graphicIndex)
     {
-        switch (index)
-        {
-            case "Clockwise":
-                return PositionChangeMethod.Clockwise;
-            case "CounterClockwise":
-                return PositionChangeMethod.CounterClockwise;
-            case "FrontBack":
-                return PositionChangeMethod.FrontBack;
-            case "UpDown":
-                return PositionChangeMethod.UpDown;
-            case "None":
-                return PositionChangeMethod.None;
-        }
-        return PositionChangeMethod.None;
-    }
-    public static Effects GetEffects(string index)
-    {
-        switch (index)
-        {
-            case "Heal":
-                return Effects.Heal;
-            case "ManaUp":
-                return Effects.ManaUp;
-            case "AttackUp":
-                return Effects.AttackUp;
-            case "DefenceUp":
-                return Effects.DefenceUp;
-            case "HpUp":
-                return Effects.HpUp;
-            case "ManaCharge":
-                return Effects.ManaCharge;
-            case "Dispel":
-                return Effects.Dispel;
-            case "BuffUp":
-                return Effects.BuffUp;
-            case "Taunt":
-                return Effects.Taunt;
-            case "Pierce":
-                return Effects.Pierce;
-            case "DefenceDown":
-                return Effects.DefenceDown;
-            case "AttackDown":
-                return Effects.AttackDown;
-            case "Doom":
-                return Effects.Doom;
-            case "ManaBurn":
-                return Effects.ManaBurn;
-            case "HpDown":
-                return Effects.HpDown;
-            case "ManaDown":
-                return Effects.ManaDown;
-            case "Deal":
-                return Effects.Deal;
-            case "Faint":
-                return Effects.Faint;
-            case "Silence":
-                return Effects.Silence;
-            case "LockOn":
-                return Effects.LockOn;
-            case "Exorcist":
-                return Effects.Exorcist;
-            case "Kill":
-                return Effects.Kill;
-            case "DebuffUp":
-                return Effects.DebuffUp;
-            case "BuffBreak":
-                return Effects.BuffBreak;
-        }
-        return Effects.Deal;
-    }
-    public static Targeting GetPTargeting(string index)
-    {
-        switch (index)
-        {
-            case "Front":
-                return Targeting.Front;
-            case "Back":
-                return Targeting.Back;
-            case "Marking":
-                return Targeting.Marking;
-            case "FrontMany":
-                return Targeting.FrontMany;
-            case "BackMany":
-                return Targeting.BackMany;
-            case "All":
-                return Targeting.All;
-            case "Up":
-                return Targeting.Up;
-            case "Down":
-                return Targeting.Down;
-            case "None":
-                return Targeting.None;
-        }
-        return Targeting.None;
+        CharacterDoll doll = ObjectPoolingManager.Pooling(characterDolls[graphicIndex]).GetComponent<CharacterDoll>();
+
+        return doll.gameObject;
     }
 }
 
-public enum PositionChangeMethod
+public class Character
 {
-    Clockwise = 0,
-    CounterClockwise = 1,
-    FrontBack = 2,
-    UpDown = 3,
-    None = 4
+    public string name {  get; private set; }
+    public string description { get; private set; }
+    public Color color { get; private set; }
+    public int graphicIndex { get; private set; }
+
+    public List<TurnOneTick> turn { get; private set; }
+
+    private int expNow;
+    public int expAdd 
+    { 
+        set 
+        {  
+            expNow += value; 
+            if(expNow >= expMax && expMax > 0)
+            {
+                LevelUp();
+            }
+        } 
+    }
+    public int expMax { get; private set; }
+    public int level { get; private set; }
+
+    public int defence { get; private set; }
+    public int guard { get; private set; }
+    public int hpMax { get; private set; }
+    public int manaMax { get; private set; }
+    public int guardTime { get; private set; }
+    public int exp { get; private set; }
+
+    public string normalAction { get; private set; }
+    public string skillAction { get; private set; }
+
+    private void LevelUp()
+    {
+        expNow -= expMax;
+        ++level;
+    }
 }
-public enum Effects
+
+public class CharacterAction
 {
-    Heal = 0,
-    ManaUp = 1,
-    AttackUp = 2,
-    DefenceUp = 3,
-    HpUp = 4,
-    ManaCharge = 5,
-    Dispel = 6,
-    BuffUp = 7,
-    Taunt = 8,
-    Pierce = 9,
-    DefenceDown = 10,
-    AttackDown = 11,
-    Doom = 12,
-    ManaBurn = 13,
-    HpDown = 14,
-    ManaDown = 15,
-    Deal = 16,
-    Faint = 17,
-    Silence = 18,
-    LockOn = 19,
-    Exorcist = 20,
-    Kill = 21,
-    DebuffUp = 22,
-    BuffBreak = 23
+    public string description { get; private set; }
+
+    public int offensiveValue { get; private set; }
+    public int defensiveValue { get; private set; }
+    public int mana { get; private set; }
+    public int stack { get; private set; }
+    public PositionChangeMethod positionChangeMethod { get; private set; }
 }
-public enum Targeting
+
+public class ActionEffects
 {
-    Front = 0,
-    Back = 1,
-    Marking = 2,
-    FrontMany = 3,
-    BackMany = 4,
-    All = 5,
-    Up = 6,
-    Down = 7,
-    None = 8
+    public int remain { get; private set; }
+    public Targeting targetOption { get; private set; }
+    public int amount { get; private set; }
 }
