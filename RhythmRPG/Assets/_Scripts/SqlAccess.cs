@@ -44,7 +44,7 @@ public class SqlAccess
         }
         catch (Exception e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
             ShutDown();
         }
     }
@@ -73,7 +73,7 @@ public class SqlAccess
         }
         catch (Exception e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
             ShutDown();
         }
     }
@@ -102,7 +102,7 @@ public class SqlAccess
         }
         catch (Exception e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
             ShutDown();
         }
     }

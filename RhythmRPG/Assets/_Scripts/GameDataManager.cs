@@ -8,6 +8,7 @@ public static class GameDataManager
 {
     public static Dictionary<string, List<ActionEffects>> effects;
     public static Dictionary<string, CharacterAction> actions;
+    public static List<string> saveDatas;
 
     public static PositionChangeMethod GetPositionChangeMethod(string index)
     {
@@ -116,11 +117,20 @@ public static class GameDataManager
             if (!File.Exists(savedataPath))
                 MakeNewSave();
 
+            if (saveDatas != null)
+                saveDatas.Clear();
+            else
+                saveDatas = new List<string>();
+
             SqlAccess sql = SqlAccess.GetAccess(Application.streamingAssetsPath + "/" + "PlayerData.db");
             sql.Open();
             sql.SqlRead("SELECT COUNT (*) FROM Player;");
             if (sql.read && sql.dataReader.Read() && sql.dataReader.GetDecimal(0) > 0)
             {
+                sql.SqlRead("SELECT Name FROM Player;");
+                while (sql.read && sql.dataReader.Read())
+                    saveDatas.Add(sql.dataReader.GetString(0));
+
                 sql.ShutDown();
                 return true;
             }
@@ -134,6 +144,11 @@ public static class GameDataManager
     {
         Debug.Log(Resources.Load("PlayerDataOrigin"));
         File.Copy(AssetDatabase.GetAssetPath(Resources.Load("PlayerDataOrigin")), savedataPath);
+    }
+
+    public static void LoadPlayer(string id)
+    {
+
     }
 
     public static void LoadDB()
