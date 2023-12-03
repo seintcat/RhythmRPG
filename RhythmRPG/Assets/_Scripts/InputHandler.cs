@@ -10,7 +10,7 @@ public class InputHandler : MonoBehaviour
     [SerializeField]
     private InputActionAsset actionAsset;
     [SerializeField]
-    private List<string> holdAbleActionNames;
+    private List<string> actionNames;
     [SerializeField]
     private string defaultActionMap;
 
@@ -25,7 +25,7 @@ public class InputHandler : MonoBehaviour
         InputActionMap map = actionAsset.FindActionMap(defaultActionMap);
         map.Enable();
 
-        foreach (string button in holdAbleActionNames)
+        foreach (string button in actionNames)
         {
             buttons.Add(button, false);
             map.FindAction(button).performed += (x) => HoldAbleButton(button, x);

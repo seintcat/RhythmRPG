@@ -6,8 +6,8 @@ using UnityEngine.Events;
 
 public class SaveDataUIButton : MonoBehaviour
 {
-    [SerializeField]
-    private MenuButton button;
+    public MenuButton button;
+
     [SerializeField]
     private TextMeshProUGUI saveDataText;
 

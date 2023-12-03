@@ -6,6 +6,8 @@ using UnityEngine;
 
 public static class GameDataManager
 {
+    public static string[] playerClockwiseFromUp = { "", "", "", "" };
+    public static string[] enemyClockwiseFromUp = { "", "", "", "" };
     public static Dictionary<string, List<ActionEffects>> effects;
     public static Dictionary<string, CharacterAction> actions;
     public static List<string> saveDatas;
@@ -109,6 +111,7 @@ public static class GameDataManager
     }
 
     private static readonly string savedataPath = Path.Combine(Application.streamingAssetsPath, "PlayerData.db");
+    private static string idNow;
 
     public static bool savedataExist
     {
@@ -148,12 +151,40 @@ public static class GameDataManager
 
     public static void LoadPlayer(string id)
     {
+        idNow = id;
+        SqlAccess sql = SqlAccess.GetAccess(Application.streamingAssetsPath + "/" + "PlayerData.db");
+        sql.Open();
+        sql.SqlRead($"SELECT COUNT (Name) FROM Player WHERE Name = '{id}';");
 
+        if(!(sql.read && sql.dataReader.Read() && sql.dataReader.GetDecimal(0) > 0))
+        {
+            sql.SqlExecute($"INSERT INTO Player(Name) VALUES ({id})");
+            AddCharacter(id, "TestPlayer", sql);
+        }
+
+        sql.ShutDown();
     }
 
     public static void LoadDB()
     {
 
+    }
+
+    //public static void AddCharacter(string id, string character)
+    //{
+    //    SqlAccess sql = SqlAccess.GetAccess(Application.streamingAssetsPath + "/" + "PlayerData.db");
+    //    sql.Open();
+    //    AddCharacter(id, character, sql);
+    //    sql.ShutDown();
+    //}
+    public static void AddCharacter(string id, string character, SqlAccess sql)
+    {
+        int index = 0;
+        sql.SqlRead($"SELECT MAX (BarrackIndex) FROM Barracks WHERE PlayerName = '{id}';");
+        if(sql.read && sql.dataReader.Read())
+            index = (int)sql.dataReader.GetDecimal(0) + 1;
+
+        sql.SqlExecute($"INSERT INTO Barracks(PlayerName, BarrackIndex, CharacterName, Exp, level) VALUES ('{id}', {index}, '{character}', 0, 1)");
     }
 }
 

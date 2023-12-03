@@ -64,10 +64,7 @@ public class MainUI : MonoBehaviour
             color.r = 1f;
             foreach(string id in GameDataManager.saveDatas)
             {
-                saveDatas.Add(id, Instantiate(oneSaveDataPrefab).GetComponent<SaveDataUIButton>());
-                saveDatas[id].transform.SetParent(saveDataTransform);
-                saveDatas[id].events.AddListener(() => GameDataManager.LoadPlayer(id));
-                saveDatas[id].text = id;
+                AddButton(id);
             }
         }
         else
@@ -76,5 +73,32 @@ public class MainUI : MonoBehaviour
         buttons[1].color = color;
     }
 
+    public void InputNewID()
+    {
+        newID.Select();
+    }
+    
+    public void CheckNewGame(string id)
+    {
+        if (id == "")
+            return;
 
+        GameDataManager.LoadPlayer(id);
+        AddButton(id);
+    }
+
+    public void EndGame()
+    {
+        Application.Quit();
+    }
+
+    private void AddButton(string id)
+    {
+        saveDatas.Add(id, Instantiate(oneSaveDataPrefab).GetComponent<SaveDataUIButton>());
+        saveDatas[id].transform.SetParent(saveDataTransform);
+        saveDatas[id].events.AddListener(() => GameDataManager.LoadPlayer(id));
+        saveDatas[id].text = id;
+
+        saveDataUI.buttonAdd = saveDatas[id].button;
+    }
 }

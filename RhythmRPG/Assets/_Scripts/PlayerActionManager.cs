@@ -15,4 +15,9 @@ public class PlayerActionManager : MonoBehaviour
     {
         
     }
+
+    public void EndAnimation()
+    {
+
+    }
 }

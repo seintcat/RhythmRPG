@@ -8,8 +8,8 @@ public class MenuButton : MonoBehaviour
     public UnityEvent events;
     public RectTransform rectTransform;
 
-    [HideInInspector]
-    public int index;
+    private int index;
+    private MenuHandler menuHandler;
 
     // Start is called before the first frame update
     void Start()
@@ -22,4 +22,12 @@ public class MenuButton : MonoBehaviour
     {
         
     }
+
+    public void Set(int _index, MenuHandler _menuHandler)
+    {
+        index = _index;
+        menuHandler = _menuHandler;
+    }
+
+    public void Clicked() => menuHandler.ClickButton(index);
 }
