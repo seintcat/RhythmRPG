@@ -113,7 +113,6 @@ public static class GameDataManager
     private static readonly string saveDataPath = Path.Combine(Application.streamingAssetsPath, "PlayerData.db");
     private static readonly string gameDataPath = Path.Combine(Application.streamingAssetsPath, "GameDB.db");
     private static string idNow;
-    private static SqlAccess gameAccess;
 
     public static bool savedataExist
     {
@@ -166,12 +165,6 @@ public static class GameDataManager
         sql.ShutDown();
     }
 
-    public static void LoadStage()
-    {
-        GetGameDB();
-        
-    }
-
     public static void LoadDB()
     {
 
@@ -194,14 +187,13 @@ public static class GameDataManager
         sql.SqlExecute($"INSERT INTO Barracks(PlayerName, BarrackIndex, CharacterName, Exp, level) VALUES ('{id}', {index}, '{character}', 0, 1)");
     }
 
-    public static void GetGameDB()
+    public static SqlAccess GetGameDB()
     {
-        if(gameAccess != null)
-        {
-            File.Copy(AssetDatabase.GetAssetPath(Resources.Load("GameDB")), gameDataPath);
-            gameAccess = SqlAccess.GetAccess(gameDataPath);
-            gameAccess.Open();
-        }
+        File.Copy(AssetDatabase.GetAssetPath(Resources.Load("GameDB")), gameDataPath);
+        SqlAccess gameAccess = SqlAccess.GetAccess(gameDataPath);
+        gameAccess.Open();
+
+        return gameAccess;
     }
 }
 

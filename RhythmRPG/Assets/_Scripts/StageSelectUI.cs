@@ -31,6 +31,7 @@ public class StageSelectUI : MonoBehaviour
 
     private void Init()
     {
-
+        SqlAccess gameDB = GameDataManager.GetGameDB();
+        gameDB.SqlRead("SELECT Stage.Name, Character.ColorR, Character.ColorG, Character.ColorB, Character.GraphicIndex FROM Stage, Character WHERE Character.Name = Stage.EnemyFront");
     }
 }
