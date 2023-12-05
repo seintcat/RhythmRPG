@@ -3930,6 +3930,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1661415076}
   - component: {fileID: 1661415077}
+  - component: {fileID: 1661415078}
   m_Layer: 5
   m_Name: StageSelect
   m_TagString: Untagged
@@ -3974,6 +3975,21 @@ MonoBehaviour:
   selector: {fileID: 1480702026}
   buttons:
   - {fileID: 1591018786}
+--- !u!114 &1661415078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661415075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2926a06396629994e8b425438865a621, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuHandler: {fileID: 1661415077}
+  stageButtonPrefab: {fileID: 2208312236121152327, guid: 9719b657c1a456b45b42cba2a632fa1b, type: 3}
+  selects: {fileID: 1205752724}
 --- !u!1 &1705207731
 GameObject:
   m_ObjectHideFlags: 0
@@ -5945,7 +5961,7 @@ MonoBehaviour:
   newID: {fileID: 3558024642750541283}
   oneSaveDataPrefab: {fileID: 7002417742721282084, guid: ad3c48600973e5542ae1228a9540a317, type: 3}
   saveDataTransform: {fileID: 1326998981236169378}
-  saveDataUI: {fileID: 0}
+  saveDataUI: {fileID: 8612780214189327197}
 --- !u!224 &4093804059826201389 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2483361342715968079, guid: 392d370c33251984b94f8e9d3ac67bbc, type: 3}

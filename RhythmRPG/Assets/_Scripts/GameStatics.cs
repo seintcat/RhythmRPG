@@ -13,6 +13,9 @@ public class GameStatics : MonoBehaviour
     public AudioClip startClip;
 
     public List<GameObject> characterDolls;
+    public List<GameObject> characterIcons;
+
+    public List<Stage> stages;
 
     private void Awake()
     {
@@ -26,6 +29,12 @@ public class GameStatics : MonoBehaviour
 
         return doll.gameObject;
     }
+}
+
+public class Stage
+{
+    public string name;
+    public string up, back, down, front;
 }
 
 public class Character

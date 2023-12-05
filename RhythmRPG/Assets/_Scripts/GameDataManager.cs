@@ -110,14 +110,16 @@ public static class GameDataManager
         return Targeting.None;
     }
 
-    private static readonly string savedataPath = Path.Combine(Application.streamingAssetsPath, "PlayerData.db");
+    private static readonly string saveDataPath = Path.Combine(Application.streamingAssetsPath, "PlayerData.db");
+    private static readonly string gameDataPath = Path.Combine(Application.streamingAssetsPath, "GameDB.db");
     private static string idNow;
+    private static SqlAccess gameAccess;
 
     public static bool savedataExist
     {
         get
         {
-            if (!File.Exists(savedataPath))
+            if (!File.Exists(saveDataPath))
                 MakeNewSave();
 
             if (saveDatas != null)
@@ -145,14 +147,13 @@ public static class GameDataManager
 
     private static void MakeNewSave()
     {
-        Debug.Log(Resources.Load("PlayerDataOrigin"));
-        File.Copy(AssetDatabase.GetAssetPath(Resources.Load("PlayerDataOrigin")), savedataPath);
+        File.Copy(AssetDatabase.GetAssetPath(Resources.Load("PlayerDataOrigin")), saveDataPath);
     }
 
     public static void LoadPlayer(string id)
     {
         idNow = id;
-        SqlAccess sql = SqlAccess.GetAccess(Application.streamingAssetsPath + "/" + "PlayerData.db");
+        SqlAccess sql = SqlAccess.GetAccess(saveDataPath);
         sql.Open();
         sql.SqlRead($"SELECT COUNT (Name) FROM Player WHERE Name = '{id}';");
 
@@ -163,6 +164,12 @@ public static class GameDataManager
         }
 
         sql.ShutDown();
+    }
+
+    public static void LoadStage()
+    {
+        GetGameDB();
+        
     }
 
     public static void LoadDB()
@@ -185,6 +192,16 @@ public static class GameDataManager
             index = (int)sql.dataReader.GetDecimal(0) + 1;
 
         sql.SqlExecute($"INSERT INTO Barracks(PlayerName, BarrackIndex, CharacterName, Exp, level) VALUES ('{id}', {index}, '{character}', 0, 1)");
+    }
+
+    public static void GetGameDB()
+    {
+        if(gameAccess != null)
+        {
+            File.Copy(AssetDatabase.GetAssetPath(Resources.Load("GameDB")), gameDataPath);
+            gameAccess = SqlAccess.GetAccess(gameDataPath);
+            gameAccess.Open();
+        }
     }
 }
 

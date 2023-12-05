@@ -193,6 +193,8 @@ MonoBehaviour:
   startClip: {fileID: 8300000, guid: 0006ce408f4ebac4ebf41b94fbad1397, type: 3}
   characterDolls:
   - {fileID: 6615287617069192327, guid: 6897ebec55d720744aa46600e300f93c, type: 3}
+  characterIcons:
+  - {fileID: 8595471333779725169, guid: 8728996b09984324785a9aa183e0bf5c, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
