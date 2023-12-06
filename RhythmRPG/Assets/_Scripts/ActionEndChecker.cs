@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class BaseGrounds : MonoBehaviour
+public class ActionEndChecker : MonoBehaviour
 {
     [SerializeField]
-    private SpriteRenderer spriteRenderer;
-
-    public Color color;
+    private UnityEvent animationEndEvent;
 
     // Start is called before the first frame update
     void Start()
@@ -18,6 +17,11 @@ public class BaseGrounds : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    public void EndAnimation()
+    {
+        animationEndEvent.Invoke();
     }
 }

@@ -11,7 +11,10 @@ public class MenuHandler : MonoBehaviour
     [SerializeField]
     private List<MenuButton> buttons;
 
-    private int indexNow;
+    private int indexNow = -1;
+    private float wait;
+
+    private static readonly float waitTime = 1f;
 
     public MenuButton buttonAdd
     {
@@ -19,6 +22,7 @@ public class MenuHandler : MonoBehaviour
         {
             buttons.Add(value);
             buttons[buttons.Count - 1].Set(buttons.Count - 1, this);
+            CheckButtonSelected(0);
         }
     }
 
@@ -29,8 +33,7 @@ public class MenuHandler : MonoBehaviour
             buttons[i].Set(i, this);
         }
 
-        indexNow = 0;
-        CheckButtonSelected(indexNow);
+        CheckButtonSelected(0);
     }
 
     // Start is called before the first frame update
@@ -42,7 +45,12 @@ public class MenuHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        wait -= Time.deltaTime;
+    }
+
+    private void OnEnable()
+    {
+        wait = waitTime;
     }
 
     public void ClickButton(int index)
@@ -55,7 +63,7 @@ public class MenuHandler : MonoBehaviour
 
     private bool CheckButtonSelected(int index)
     {
-        if (!gameObject.activeSelf || !enabled || buttons.Count < 1)
+        if (!gameObject.activeSelf || !enabled || buttons.Count < 1 || wait > 0)
             return false;
 
         if (indexNow == index)
@@ -75,10 +83,20 @@ public class MenuHandler : MonoBehaviour
         selector.offsetMax = new Vector2(0, 0);
         return false;
     }
+    
+    public void MoveSelector(int index)
+    {
+        indexNow = index;
+        selector.SetParent(buttons[indexNow].rectTransform);
+        selector.anchorMin = new Vector2(0, 0);
+        selector.anchorMax = new Vector2(1, 1);
+        selector.offsetMin = new Vector2(0, 0);
+        selector.offsetMax = new Vector2(0, 0);
+    }
 
     public void SelectMenu()
     {
-        if (gameObject.activeSelf && enabled)
+        if (gameObject.activeSelf && enabled && wait < 0)
             buttons[indexNow].events.Invoke();
     }
 

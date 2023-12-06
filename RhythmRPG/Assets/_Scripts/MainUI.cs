@@ -16,6 +16,10 @@ public class MainUI : MonoBehaviour
     private RectTransform saveDataTransform;
     [SerializeField]
     private MenuHandler saveDataUI;
+    [SerializeField]
+    private GameObject uiObject;
+    [SerializeField]
+    private GameObject nextUI;
 
     private Dictionary<string, SaveDataUIButton> saveDatas;
 
@@ -85,6 +89,9 @@ public class MainUI : MonoBehaviour
 
         GameDataManager.LoadPlayer(id);
         AddButton(id);
+        
+        uiObject.SetActive(false);
+        nextUI.SetActive(true);
     }
 
     public void EndGame()
@@ -96,7 +103,12 @@ public class MainUI : MonoBehaviour
     {
         saveDatas.Add(id, Instantiate(oneSaveDataPrefab).GetComponent<SaveDataUIButton>());
         saveDatas[id].transform.SetParent(saveDataTransform);
-        saveDatas[id].events.AddListener(() => GameDataManager.LoadPlayer(id));
+        saveDatas[id].events.AddListener(() => {
+            GameDataManager.LoadPlayer(id);
+
+            uiObject.SetActive(false);
+            nextUI.SetActive(true);
+        });
         saveDatas[id].text = id;
 
         saveDataUI.buttonAdd = saveDatas[id].button;

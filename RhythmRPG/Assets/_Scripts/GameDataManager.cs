@@ -11,6 +11,7 @@ public static class GameDataManager
     public static Dictionary<string, List<ActionEffects>> effects;
     public static Dictionary<string, CharacterAction> actions;
     public static List<string> saveDatas;
+    public static string stageNow;
 
     public static PositionChangeMethod GetPositionChangeMethod(string index)
     {
@@ -113,6 +114,7 @@ public static class GameDataManager
     private static readonly string saveDataPath = Path.Combine(Application.streamingAssetsPath, "PlayerData.db");
     private static readonly string gameDataPath = Path.Combine(Application.streamingAssetsPath, "GameDB.db");
     private static string idNow;
+    private static bool gameDataCheck = false;
 
     public static bool savedataExist
     {
@@ -158,7 +160,7 @@ public static class GameDataManager
 
         if(!(sql.read && sql.dataReader.Read() && sql.dataReader.GetDecimal(0) > 0))
         {
-            sql.SqlExecute($"INSERT INTO Player(Name) VALUES ({id})");
+            sql.SqlExecute($"INSERT INTO Player(Name) VALUES ('{id}')");
             AddCharacter(id, "TestPlayer", sql);
         }
 
@@ -181,7 +183,7 @@ public static class GameDataManager
     {
         int index = 0;
         sql.SqlRead($"SELECT MAX (BarrackIndex) FROM Barracks WHERE PlayerName = '{id}';");
-        if(sql.read && sql.dataReader.Read())
+        if(sql.read && sql.dataReader.Read() && !sql.dataReader.IsDBNull(0))
             index = (int)sql.dataReader.GetDecimal(0) + 1;
 
         sql.SqlExecute($"INSERT INTO Barracks(PlayerName, BarrackIndex, CharacterName, Exp, level) VALUES ('{id}', {index}, '{character}', 0, 1)");
@@ -189,6 +191,9 @@ public static class GameDataManager
 
     public static SqlAccess GetGameDB()
     {
+        if(File.Exists(gameDataPath) && !gameDataCheck)
+            File.Delete(gameDataPath);
+
         File.Copy(AssetDatabase.GetAssetPath(Resources.Load("GameDB")), gameDataPath);
         SqlAccess gameAccess = SqlAccess.GetAccess(gameDataPath);
         gameAccess.Open();

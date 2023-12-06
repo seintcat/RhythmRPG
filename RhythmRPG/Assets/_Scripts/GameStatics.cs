@@ -19,6 +19,7 @@ public class GameStatics : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         DontDestroyOnLoad(gameObject);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }

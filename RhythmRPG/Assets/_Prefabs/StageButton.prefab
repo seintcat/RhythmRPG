@@ -138,7 +138,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   events:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5550236014206158144}
+        m_TargetAssemblyTypeName: StageButton, Assembly-CSharp
+        m_MethodName: StageSelect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   rectTransform: {fileID: 2901545285750020637}
 --- !u!114 &5550236014206158144
 MonoBehaviour:
@@ -158,6 +170,7 @@ MonoBehaviour:
   - {fileID: 2645179934850908966}
   - {fileID: 6314150307995866339}
   stageName: {fileID: 3593206575652606782}
+  rectTransform: {fileID: 2901545285750020637}
 --- !u!1 &3134745153312409171
 GameObject:
   m_ObjectHideFlags: 0
