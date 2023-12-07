@@ -11,6 +11,8 @@ public class StageSelectUI : MonoBehaviour
     private GameObject stageButtonPrefab;
     [SerializeField]
     private Transform selects;
+    [SerializeField]
+    private EnemyActionManager enemyBarrack;
 
     private static readonly string buttonMakeSql = "SELECT Stage.StageIndex, Character.GraphicIndex, Character.ColorR, Character.ColorG, Character.ColorB FROM Stage, Character WHERE Character.Name = Stage.Enemy";
 
@@ -43,23 +45,26 @@ public class StageSelectUI : MonoBehaviour
             while (gameDB.dataReader.Read())
             {
                 StageButton button = ObjectPoolingManager.Pooling(stageButtonPrefab).GetComponent<StageButton>();
+                int stageIndex = (int)gameDB.dataReader.GetDecimal(0);
+
                 button.transform.SetParent(selects);
                 button.ResetUI();
                 button.text = gameDB.dataReader.GetString(1);
-                buttons.Add((int)gameDB.dataReader.GetDecimal(0), button);
+                buttons.Add(stageIndex, button);
+
                 MenuButton buttonUI = button.gameObject.GetComponent<MenuButton>();
                 buttonUI.events.AddListener(() => {
                     gameObject.SetActive(false);
+                    enemyBarrack.MakeStage(stageIndex);
                 });
                 menuHandler.buttonAdd = buttonUI;
             }
         }
 
-        string[] clockwise = { "Up", "Back", "Down", "Front" };
         for(int i = 0; i < 4; ++i)
         {
-            gameDB.SqlRead(buttonMakeSql + clockwise[i]);
-            while (gameDB.dataReader.Read())
+            gameDB.SqlRead(buttonMakeSql + GameDataManager.enemyClockwiseFromUp[i]);
+            if (gameDB.dataReader.Read())
             {
                 buttons[(int)gameDB.dataReader.GetDecimal(0)].SetGraphic(i,
                     new Color(gameDB.dataReader.GetFloat(2), gameDB.dataReader.GetFloat(3), gameDB.dataReader.GetFloat(4)),

@@ -7,7 +7,7 @@ using UnityEngine;
 public static class GameDataManager
 {
     public static string[] playerClockwiseFromUp = { "", "", "", "" };
-    public static string[] enemyClockwiseFromUp = { "", "", "", "" };
+    public static List<string> enemyClockwiseFromUp = new List<string>{ "Up", "Back", "Down", "Front" };
     public static Dictionary<string, List<ActionEffects>> effects;
     public static Dictionary<string, CharacterAction> actions;
     public static List<string> saveDatas;
@@ -115,6 +115,7 @@ public static class GameDataManager
     private static readonly string gameDataPath = Path.Combine(Application.streamingAssetsPath, "GameDB.db");
     private static string idNow;
     private static bool gameDataCheck = false;
+    private static SqlAccess gameAccess;
 
     public static bool savedataExist
     {
@@ -193,10 +194,13 @@ public static class GameDataManager
     {
         if(File.Exists(gameDataPath) && !gameDataCheck)
             File.Delete(gameDataPath);
+        else
+            File.Copy(AssetDatabase.GetAssetPath(Resources.Load("GameDB")), gameDataPath);
 
-        File.Copy(AssetDatabase.GetAssetPath(Resources.Load("GameDB")), gameDataPath);
-        SqlAccess gameAccess = SqlAccess.GetAccess(gameDataPath);
-        gameAccess.Open();
+        if(gameAccess == null)
+            gameAccess = SqlAccess.GetAccess(gameDataPath);
+        if (!gameAccess.open)
+            gameAccess.Open();
 
         return gameAccess;
     }

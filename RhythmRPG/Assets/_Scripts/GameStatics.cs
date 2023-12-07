@@ -15,8 +15,6 @@ public class GameStatics : MonoBehaviour
     public List<GameObject> characterDolls;
     public List<GameObject> characterIcons;
 
-    public List<Stage> stages;
-
     private void Awake()
     {
         instance = this;
@@ -32,13 +30,7 @@ public class GameStatics : MonoBehaviour
     }
 }
 
-public class Stage
-{
-    public string name;
-    public string up, back, down, front;
-}
-
-public class Character
+public class Character_
 {
     public string name {  get; private set; }
     public string description { get; private set; }
